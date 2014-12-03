@@ -83,9 +83,9 @@ int isDragging = 0; // true when dragging
 int xDragStart = 0; // records the x-coordinate when dragging starts
 
 //Maze
-const int X=20;
-const int Y=20;
-Maze maze(X,Y);
+const int _x=20;
+const int _y=20;
+Maze maze(_x,_y);
 
 //---------------------------------------------------------------------
 //	Initializes the maze
@@ -98,27 +98,35 @@ void init(){
 	y=4;
 
 
-
-   GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
-   GLfloat mat_shininess[] = { 5.0 };
-   GLfloat light_position[] = { 1, 1, 1.0, 0.0 };
-   glClearColor (0.0, 0.0, 0.0, 0.0);
-   glShadeModel (GL_SMOOTH);
+  	 glClearColor (0.0, 0.0, 0.0, 0.0);
 
    //Disable global ambient lighting
-   GLfloat black[] = {0, 0, 0, 1};
-   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
-
-   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-   glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-   glLightf (GL_LIGHT1, GL_SPOT_CUTOFF, 15.f);
+   	GLfloat black[] = {0, 0, 0, 1};
+   	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
 
 
-   glEnable(GL_LIGHTING);
+	GLfloat ambient[] = { 0.7, 0.7, 0.7, 1.0 };
+	GLfloat diffuse[] = { 0.2,0.2,0.2, 1.0 };
+	GLfloat specular[] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat shininess = 65.0;
+
+	GLfloat position[] = { 0.0, 0, 0.0, 0.5 };
+
+	glEnable(GL_COLOR_MATERIAL);
+	glLightfv(GL_LIGHT0,GL_AMBIENT,ambient);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuse);
+	glLightfv(GL_LIGHT0,GL_AMBIENT,specular);
+	glLightfv(GL_LIGHT0,GL_POSITION,position);
+
+
+   //glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
-   glEnable(GL_LIGHT1);
+   //glEnable(GL_LIGHT1);
    glEnable(GL_DEPTH_TEST);
+   glShadeModel (GL_SMOOTH);
+ //  glEnable( GL_TEXTURE_2D );
+ //  glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,mode?GL_REPLACE:GL_MODULATE);
+   //glBindTexture(GL_TEXTURE_2D,texture[ntex]);
 }
 
 
@@ -213,14 +221,16 @@ void renderScene(void)
 	// Draw ground - 200x200 square colored grey
 
 	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
 	glColor3f(0.3, 0.3, 0.3);
 	glBegin(GL_QUADS);
 		glVertex3f(-100.0, -100.0, 0.0);
-		glVertex3f(-100.0,  Y*3, 0.0);
-		glVertex3f( X*3,  Y*3, 0.0);
-		glVertex3f( X*3, -100.0, 0.0);
+		glVertex3f(-100.0,  _y*3, 0.0);
+		glVertex3f( _x*3,  _y*3, 0.0);
+		glVertex3f( _x*3, -100.0, 0.0);
 	glEnd();
 	glEnable(GL_LIGHTING);
+	//glEnable(GL_TEXTURE_2D);
 
 	// Draw maze
 	drawMaze();
@@ -332,8 +342,6 @@ int main(int argc, char **argv)
 
 	// OpenGL init
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	//glEnable(GL_CULL_FACE);
 
 	init();
