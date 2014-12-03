@@ -93,19 +93,32 @@ Maze maze(X,Y);
 //	Adds walls, and will initialize lighting in the future
 //---------------------------------------------------------------------
 void init(){
-	/*
-	srand (time(NULL));
-	for(int y_=0;y_<Y;++y_){
-		for(int x_=0;x_<X;++x_){
-			if((x_==0||y_==0||x_==X-1||y_==Y-1||rand()%100<30))
-				if(!(x_==X-5&&y_==Y-1)&&!(x_==1&&y_==1))//Add an exit
-					maze.add_wall(x_,y_);
-		}
-	}
-*/
 	maze.generate();
 	x=4;
 	y=4;
+
+
+
+   GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1.0 };
+   GLfloat mat_shininess[] = { 5.0 };
+   GLfloat light_position[] = { 1, 1, 1.0, 0.0 };
+   glClearColor (0.0, 0.0, 0.0, 0.0);
+   glShadeModel (GL_SMOOTH);
+
+   //Disable global ambient lighting
+   GLfloat black[] = {0, 0, 0, 1};
+   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
+
+   glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+   glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+   glLightf (GL_LIGHT1, GL_SPOT_CUTOFF, 15.f);
+
+
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   glEnable(GL_LIGHT1);
+   glEnable(GL_DEPTH_TEST);
 }
 
 
@@ -198,6 +211,8 @@ void renderScene(void)
 			0.0,    0.0,    1.0);
 
 	// Draw ground - 200x200 square colored grey
+
+	glDisable(GL_LIGHTING);
 	glColor3f(0.3, 0.3, 0.3);
 	glBegin(GL_QUADS);
 		glVertex3f(-100.0, -100.0, 0.0);
@@ -205,6 +220,7 @@ void renderScene(void)
 		glVertex3f( X*3,  Y*3, 0.0);
 		glVertex3f( X*3, -100.0, 0.0);
 	glEnd();
+	glEnable(GL_LIGHTING);
 
 	// Draw maze
 	drawMaze();
@@ -316,6 +332,9 @@ int main(int argc, char **argv)
 
 	// OpenGL init
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	//glEnable(GL_CULL_FACE);
 
 	init();
 	// enter GLUT event processing cycle

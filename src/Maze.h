@@ -14,8 +14,9 @@ private:
 		srand (time(NULL));
 		for(int y=0;y<_y;++y){
 			for(int x=0;x<_x;++x){
-				if((x==0||y==0||x==_x-1||y==_y-1||rand()%100<30))
-					if(!(x==_x-5&&y==_y-1)&&!(x==1&&y==1))//Add an exit
+				if((x==0||y==0||x==_x-1||y==_y-1||rand()%100<35))
+					if(!(x==_x-5&&y==_y-1)&&!(x==1&&y==1)
+					   &&!(x==_x-5&&y==_y-2)&&!(x==1&&y==2))//Add an exit
 						add_wall(x,y);
 			}
 		}
@@ -53,6 +54,62 @@ private:
 		return ret;
 
 	}
+	void drawPlane(void)
+	{
+	   int i = 0;
+   
+	   //glShadeModel(GL_FLAT); // Flat shading to get the checkered pattern.
+	   for(float z = 1.5; z > -1.5; z -= 0.10)
+	   {
+		  glBegin(GL_TRIANGLE_STRIP);
+		  for(float x = -1.5; x < 1.5; x += 0.10)
+		  {
+			 //if (i % 2) glColor3f(0.0, 0.5, 0.5);  
+			 glColor3f(1.0, 1.0, 1.0); 
+			 glNormal3f(0.0, 1.0, 0.0);
+			 glVertex3f(x, 0.0, z - 0.1);
+			 glNormal3f(0.0, 1.0, 0.0);
+			 glVertex3f(x, 0.0, z);
+			 i++;
+		  }
+		  glEnd();
+		  i++;
+	   }
+	   glShadeModel(GL_SMOOTH); // Restore smooth shading.
+	}
+	void draw_wall(){
+		glPushMatrix();
+			drawPlane();
+		glPopMatrix();
+		glPushMatrix();//North/south wall
+			glTranslatef(0,1.5,0);
+			glRotatef(90,0.0, 1.0, 0.0);
+			drawPlane();
+		glPopMatrix();
+		glPushMatrix();//North/south wall
+			glTranslatef(0,-1.5,0);
+			glRotatef(-90,0.0, 1.0, 0.0);
+			glRotatef(180,0.0, 0.0, 1.0);
+			drawPlane();
+		glPopMatrix();
+		glPushMatrix();//East/West wall
+			glTranslatef(-1.5,0,0);
+			glRotatef(90,0.0, 0.0, 1.0);
+			drawPlane();
+		glPopMatrix();
+		glPushMatrix();//East/West wall
+			glTranslatef(1.5,0,0);
+			glRotatef(-90,0.0, 0.0, 1.0);
+			drawPlane();
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(0,0,1.5);
+			//glRotatef(180,0.0, 1.0, 0.0);
+			glRotatef(90,1.0, 0.0, 0.0);
+			//glTranslatef(0,0,1.5);
+			drawPlane();
+		glPopMatrix();
+	}
 public:
 	Maze(int x, int y): walls(y,std::vector<bool>(x,false)),_x(x),_y(y) {}
 	void add_wall(int x,int y){
@@ -60,7 +117,12 @@ public:
 	}
 	void generate(){
 		//loop on setup_walls until it says we have a valid maze
-		while(!setup_walls()){}
+		int num_tries=0;
+		while(!setup_walls()){
+			num_tries++;
+			if(!(num_tries%1000))
+				std::cout<<"No path to exit. Generating maze "<<num_tries<<std::endl;
+		}
 	}
 	void draw_walls(){
 		glMatrixMode(GL_MODELVIEW); // return to modelview mode
@@ -70,6 +132,7 @@ public:
 					glTranslatef(x*3+1.5, y*3+1.5, 1); // position wall
 					if(walls[y][x])
 						glutSolidCube(3); // wall
+						//draw_wall();
 
 				glPopMatrix();
 			}
