@@ -85,7 +85,7 @@ int xDragStart = 0; // records the x-coordinate when dragging starts
 //Maze
 const int _x=20;
 const int _y=20;
-Maze maze(_x,_y);
+Smart_Maze maze(_x,_y);
 
 //---------------------------------------------------------------------
 //	Initializes the maze
