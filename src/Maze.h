@@ -151,7 +151,59 @@ unsigned int LoadTexBMP(char* file)
 
 
 
+static void
+drawBox(GLfloat size, GLenum type)
+{
+  static GLfloat n[6][3] =
+  {
+    {-1.0, 0.0, 0.0},
+    {0.0, 1.0, 0.0},
+    {1.0, 0.0, 0.0},
+    {0.0, -1.0, 0.0},
+    {0.0, 0.0, 1.0},
+    {0.0, 0.0, -1.0}
+  };
+  static GLint faces[6][4] =
+  {
+    {0, 1, 2, 3},
+    {3, 2, 6, 7},
+    {7, 6, 5, 4},
+    {4, 5, 1, 0},
+    {5, 6, 2, 1},
+    {7, 4, 0, 3}
+  };
 
+
+  GLfloat v[8][3];
+  GLint i;
+
+  v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
+  v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
+  v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
+  v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
+  v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
+  v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
+
+  for (i = 5; i >= 0; i--) {
+    glBegin(type);
+    glNormal3fv(&n[i][0]);
+	glTexCoord2f(0, 0);
+    glVertex3fv(&v[faces[i][0]][0]);
+	glTexCoord2f(0, 1);
+    glVertex3fv(&v[faces[i][1]][0]);
+	glTexCoord2f(1, 1);
+    glVertex3fv(&v[faces[i][2]][0]);
+	glTexCoord2f(1, 0);
+    glVertex3fv(&v[faces[i][3]][0]);
+    glEnd();
+  }
+}
+
+void APIENTRY
+SolidCube(GLdouble size)
+{
+  drawBox(size, GL_QUADS);
+}
 
 
 
@@ -304,6 +356,8 @@ private:
 			return 0;
 	}
 public:
+	int get_x(){return _x;}
+	int get_y(){return _y;}
 	void print_maze(){
 		for (int j=_y-1;j>=0;--j){
 			for(int k=0; k<_x;++k){
@@ -324,9 +378,9 @@ public:
 
   		texture[0] = LoadTexBMP("crate.bmp");
    		glBindTexture(GL_TEXTURE_2D,texture[0]);
-		glEnable(GL_TEXTURE_2D);
    		glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,mode?GL_REPLACE:GL_MODULATE);
    		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glEnable(GL_TEXTURE_2D);
 
 //			std::cout<<_x<<" , "<<_y<<" Walls: "<<walls.size()<<std::endl;
    		//clear cells
@@ -352,6 +406,12 @@ public:
 	}
 	void draw_walls(){
 	//	std::cout<<"Drawing Walls"<<std::endl;
+		glEnable(GL_TEXTURE_2D);
+		static int once = 0;
+		if(!once){
+			LoadTexBMP("crate.bmp");
+			once++;
+		}
 		glMatrixMode(GL_MODELVIEW); // return to modelview mode
 		for(int y=0;y<_y;++y){
 			for(int x=0;x<_x;++x){
@@ -361,7 +421,7 @@ public:
 						//glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
 					    //glEnable(GL_TEXTURE_GEN_T);
 					    //glBindTexture(GL_TEXTURE_2D, texture[0]);
-					    glutSolidCube(3);
+					    SolidCube(3);
 					    //draw_wall();
 					    //glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
 					    //glDisable(GL_TEXTURE_GEN_T);
