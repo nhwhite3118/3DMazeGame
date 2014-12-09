@@ -276,6 +276,18 @@ private:
 
 	}
 
+	void clear_maze(){
+		for (int j=_y-1;j>=0;--j){
+			for(int k=0; k<_x;++k){
+				walls[j][k]=true;
+			}
+		}
+   		for(int ix=1;ix<_x-1;ix+=2){
+   			for(int iy=1;iy<_y-1;iy+=2){
+   				walls[iy][ix]=0;
+   			}
+   		}
+	}
 
   	// Has undefined behavior on non-adjacent walls
 	void remove_wall(int c1, int c2){
@@ -395,6 +407,7 @@ public:
 	void generate(){
 		//loop on setup_walls until it says we have a valid maze
 		int num_tries=0;
+			clear_maze();
 		while(!setup_walls()){
 			num_tries++;
 			if(!(num_tries%1000))

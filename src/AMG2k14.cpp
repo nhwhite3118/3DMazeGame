@@ -1,44 +1,7 @@
-//	Thoughts
-//	
-//	We need to eventually replace all these glut objects with ones
-//	with more polygons so that we can do lighting
-//	
-//	Currently working on transform between camera and maze for collisions
-//	
-//	Textures! They will add so much. Probably more than anything else.
-//	
-//	Need better way of generating maze. Maybe auto-generate method in maze?
-//	It could keep calling itself until if finds a working maze.
-//		As probability of a working maze goes down, that chance of this
-//		method causing a stack overflow increases. Maybe have it call a 
-//		helper method that returns working or now working. That way its
-//		pushing and popping one stack frame until it gets things to work.
-//	
-//		Better way of making walls then calling random on each square?
-//			Recursively make snaking walls? Lots of extra effort.
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
-//	
 
 //----------------------------------------------------------------------
 //	Addapted from: https://www.cs.umd.edu/class/spring2013/cmsc425/oglsample.shtml
 //
-//	This is a sample program that illustrates OpenGL and GLUT. It
-//	renders a picture of 36 snowmen. The camera can be moved by dragging
-//	the mouse. The camera moves forward by hitting the up-arrow key and
-//	back by moving the down-arrow key. Hit ESC, 'q' or 'Q' to exit.
-//
-//  This is a minimalist program. Very little attention has
-//	been paid to good programming technique.
 //----------------------------------------------------------------------
 
 #include <cstdlib> // standard definitions
@@ -193,6 +156,9 @@ void update(void)
 		x += deltaMove * lx * 0.1;
 		y += deltaMove * ly * 0.1;
 	}
+	if(y>_y*3){
+		maze.generate();
+		init();}
 	glutPostRedisplay(); // redisplay everything
 }
 
@@ -249,8 +215,8 @@ void renderScene(void)
 void processNormalKeys(unsigned char key, int xx, int yy)
 {
 	if (key == ESC || key == 'q' || key == 'Q') exit(0);
-	if (key == 'w' || key=='W') deltaMove = 1.0;
-	if (key == 's' || key=='S') deltaMove = -1.0;
+	if (key == 'w' || key=='W') deltaMove = 3.0;
+	if (key == 's' || key=='S') deltaMove = -3.0;
 } 
 void releaseNormalKeys(unsigned char key, int xx, int yy)
 {
@@ -262,8 +228,8 @@ void releaseNormalKeys(unsigned char key, int xx, int yy)
 void pressSpecialKey(int key, int xx, int yy)
 {
 	switch (key) {
-		case GLUT_KEY_UP : deltaMove = 1.0; break;
-		case GLUT_KEY_DOWN : deltaMove = -1.0; break;
+		case GLUT_KEY_UP : deltaMove = 3.0; break;
+		case GLUT_KEY_DOWN : deltaMove = -3.0; break;
 	}
 } 
 
